@@ -1,0 +1,23 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import List
+
+app = FastAPI()
+
+class DomainRequest(BaseModel):
+    keywords: List[str]
+    domains: List[str]
+
+@app.get("/")
+def home():
+    return {"message": "Domain Filter API is running!"}
+
+@app.post("/filter_domains")
+def filter_domains(data: DomainRequest):
+    matched_domains = []
+    for domain in data.domains:
+        for keyword in data.keywords:
+            if keyword.lower() in domain.lower():
+                matched_domains.append(domain)
+                break
+    return {"matched_domains": matched_domains}
